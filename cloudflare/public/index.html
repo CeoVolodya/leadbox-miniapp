@@ -14,11 +14,82 @@
 <section class="section" id="process"><div class="section-head"><span class="eyebrow">Прозрачный процесс</span><h2>От идеи к результату</h2><p>Каждый этап понятен: что делаем, когда показываем результат и что будет после запуска.</p></div><div class="steps"><div class="step"><span class="num">01</span><h3>Обсуждаем идею</h3><p>Слушаем задачу, уточняем цели и пожелания.</p></div><div class="step"><span class="num">02</span><h3>Предлагаем план</h3><p>Согласовываем функционал, сроки и бюджет.</p></div><div class="step"><span class="num">03</span><h3>Создаём продукт</h3><p>Разработка, демонстрация, тестирование и исправления.</p></div><div class="step"><span class="num">04</span><h3>Сопровождаем</h3><p>Помогаем с запуском, обновлениями и поддержкой.</p></div></div></section>
 <section class="section faq"><div class="section-head"><span class="eyebrow">Частые вопросы</span><h2>Всё, что нужно знать</h2></div><details><summary>Сколько стоит проект?</summary><p>После описания задачи подготовим оценку объёма работ и стоимости. Итог зависит от сложности и интеграций.</p></details><details><summary>Можно заказать только техническую поддержку?</summary><p>Да, поддерживаем и дорабатываем существующие проекты после первичной диагностики.</p></details><details><summary>Сможет ли бот работать 24/7?</summary><p>Для круглосуточной работы потребуется подходящий хостинг, мониторинг и резервные копии. Абсолютной безотказности не гарантирует ни одна платформа.</p></details><details><summary>Можно начать с небольшого проекта?</summary><p>Да, можно создать MVP и расширять функциональность поэтапно.</p></details></section>
 <section class="callout" id="contact"><span class="eyebrow">Обсудим ваш проект</span><h2>У вас есть идея?<br>Превратим её в план.</h2><p>Не нужно писать техническое задание. Просто расскажите, что хотите улучшить, а мы поможем разобраться с решением.</p><a class="btn order" href="#contact">✉️ Оставить заявку в Telegram ↗</a><p id="orderNote" style="font-size:12px">Контактные данные нужны только для ответа на обращение.</p></section></main><footer class="wrap">LeadBox Studio · Демонстрационные концепции · Оценка проекта индивидуальна</footer><div class="sticky"><a class="btn order" href="#contact">✉️ Обсудить проект ↗</a></div>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-const concepts=[['web','Интернет-магазин','Каталог товаров с карточками, фильтрами и быстрыми заявками.','WEB / SHOP'],['bot','Бот для записи','Выбор услуги, времени и автоматические напоминания.','TELEGRAM / BOOKING'],['bot','Mini App для кафе','Меню, категории и оформление заказов прямо в Telegram.','MINI APP / CAFE'],['auto','Панель заявок','Статусы клиентов, назначение менеджеров и отчёты.','CRM / DASHBOARD'],['web','Сайт компании','Услуги, презентация бренда и форма обратной связи.','WEB / BUSINESS'],['auto','Мониторинг проектов','Состояние сайтов и ботов, уведомления и контроль сбоев.','SUPPORT / STATUS']];
-const grid=document.getElementById('caseGrid');for(const [cat,name,descr,label] of concepts){const card=document.createElement('article');card.className='case';card.dataset.cat=cat;card.innerHTML='<div class="collage" role="img" aria-label="Демонстрационный фотоколлаж интерфейса: '+name+'"><div class="mock"><small>'+label+'</small><div class="fake-head"></div><div class="fake-line"></div><div class="fake-line short"></div><div class="fake-image"></div><div class="fake-line"></div></div><div class="mock side"><small>PREVIEW</small><div class="fake-image"></div><div class="fake-line"></div><div class="fake-line short"></div></div></div><div class="body"><span class="tag">ДЕМО-КОНЦЕПЦИЯ</span><h3>'+name+'</h3><p>'+descr+'</p><a class="link order" href="#contact">Хочу похожий проект ↗</a></div>';grid.appendChild(card)}
-document.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>{const e=document.getElementById(b.dataset.toggle);const o=e.classList.toggle('open');b.textContent=o?'Свернуть −':'Подробнее +';b.setAttribute('aria-expanded',String(o))}));
-document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))});document.querySelectorAll('.case').forEach(x=>x.hidden=b.dataset.filter!=='all'&&x.dataset.cat!==b.dataset.filter)}));
-const tg=window.Telegram?.WebApp;try{tg?.ready();tg?.expand()}catch(e){}const query=new URLSearchParams(location.search);const bot=(query.get('bot')||'').replace(/^@/,'');const valid=/^[A-Za-z0-9_]{5,32}$/.test(bot);document.querySelectorAll('.order').forEach(a=>{if(valid){const url='https://t.me/'+bot+'?start=order';a.href=url;a.addEventListener('click',e=>{if(tg?.openTelegramLink){e.preventDefault();tg.openTelegramLink(url)}})}else{a.addEventListener('click',e=>{e.preventDefault();document.getElementById('orderNote').textContent='Чтобы оформить заказ, откройте этот сайт из Telegram-бота LeadBox Studio. Параметр ?bot=USERNAME пока не настроен.'})}});
+
+<style>
+.lb-overlay{position:fixed;inset:0;background:#03070dcc;z-index:1000;display:grid;place-items:center;padding:16px;overflow:auto;backdrop-filter:blur(9px)}
+.lb-overlay[hidden]{display:none}
+.lb-modal{background:#171e2b;border:1px solid #425775;border-radius:20px;width:min(480px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:22px;box-shadow:0 26px 80px #0009}
+.lb-header{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.lb-header h2{margin:0;font-size:24px}
+.lb-x{border:1px solid #48546b;background:transparent;color:white;border-radius:10px;padding:7px 12px;font-size:20px}
+.lb-form{display:grid;gap:13px;margin-top:18px}
+.lb-form label{display:grid;gap:5px;font-weight:650;font-size:13px}
+.lb-form input,.lb-form select,.lb-form textarea{background:#0e1621;color:white;border:1px solid #43566b;border-radius:11px;width:100%;padding:12px;font:inherit}
+.lb-form textarea{min-height:110px;resize:vertical}
+.lb-status{font-size:13px;color:#b6c8e0;min-height:21px}
+.lb-modal .btn{width:100%}
+.lb-fallback{color:#8dd2ff;text-decoration:underline;font-size:13px}
+</style>
+<div class="lb-overlay" id="lbOverlay" hidden>
+ <section class="lb-modal" role="dialog" aria-modal="true" aria-labelledby="lbTitle">
+  <div class="lb-header"><h2 id="lbTitle">Обсудить проект</h2><button class="lb-x" id="lbClose" type="button" aria-label="Закрыть">×</button></div>
+  <p style="color:#b0bdd0;margin:8px 0">Расскажи о задаче, и мы свяжемся с тобой в Telegram.</p>
+  <form class="lb-form" id="lbForm">
+   <label>Тип проекта<select name="service" required>
+    <option value="Сайт">Сайт</option><option value="Telegram-бот">Telegram-бот</option>
+    <option value="Telegram Mini App">Telegram Mini App</option><option value="Веб-приложение">Веб-приложение</option>
+    <option value="Автоматизация / CRM">Автоматизация / CRM</option><option value="Техподдержка">Техподдержка</option>
+    <option value="Другое">Другое</option>
+   </select></label>
+   <label>Что нужно разработать?<textarea name="description" minlength="10" maxlength="3000" required placeholder="Опиши идею, основные функции и пожеланиconst tg=window.Telegram?.WebApp;
+try{tg?.ready();tg?.expand()}catch(e){}
+const overlay=document.getElementById('lbOverlay'),form=document.getElementById('lbForm'),
+status=document.getElementById('lbStatus'),fallback=document.getElementById('lbBotLink');
+let botDeepLink=null;
+fetch('/api/bot').then(r=>r.ok?r.json():null).then(data=>{
+ if(data?.username&&/^[A-Za-z0-9_]{5,32}$/.test(data.username)){
+  botDeepLink='https://t.me/'+data.username+'?start=order';
+  fallback.href=botDeepLink;fallback.hidden=false;
+ }
+}).catch(()=>{});
+function openOrder(e){
+ e?.preventDefault();
+ overlay.hidden=false;
+ document.body.style.overflow='hidden';
+ status.textContent=tg?.initData?'':'Для отправки заявки откройте Mini App через Telegram-бота.';
+ const input=form.querySelector('[name="contact"]');
+ if(tg?.initDataUnsafe?.user?.username && !input.value)input.value='@'+tg.initDataUnsafe.user.username;
+ form.querySelector('textarea').focus();
+}
+function closeOrder(){overlay.hidden=true;document.body.style.overflow='';}
+document.getElementById('lbClose').addEventListener('click',closeOrder);
+overlay.addEventListener('click',e=>{if(e.target===overlay)closeOrder()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closeOrder()});
+document.addEventListener('click',e=>{
+ const a=e.target.closest('a.order');
+ if(!a)return;
+ openOrder(e);
+});
+form.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const btn=form.querySelector('[type="submit"]');btn.disabled=true;
+ status.textContent='Отправляем заявку…';
+ if(!tg?.initData){
+  status.textContent='Откройте Mini App через кнопку Telegram-бота, чтобы безопасно отправить заявку.';
+  if(botDeepLink)fallback.hidden=false;
+  btn.disabled=false;return;
+ }
+ const data=new FormData(form);
+ try{
+  const res=await fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+   initData:tg.initData,service:data.get('service'),description:data.get('description'),contact:data.get('contact')
+  })});
+  const result=await res.json();
+  if(!res.ok||!result.ok)throw Error(result.error||'Не удалось отправить заявку');
+  status.textContent='✅ Заявка отправлена! Мы свяжемся с вами.';
+  form.reset();tg?.HapticFeedback?.notificationOccurred?.('success');
+ }catch(err){status.textContent=err.message||'Ошибка отправки заявки';}
+ finally{btn.disabled=false;}
+});
+
 </script></body></html>
