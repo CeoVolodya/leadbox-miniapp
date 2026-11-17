@@ -29,7 +29,18 @@ const menu=(env)=>kb([
   [{text:"💼 Услуги",callback_data:"services"}],
   ...(env.MINI_APP_URL&&env.MINI_APP_URL.startsWith("https://")?[[{text:"🌐 Открыть Mini App",web_app:{url:env.MINI_APP_URL}}]]:[])
 ]);
-async function start(env,chat){await msg(env,chat,"Добро пожаловать в LeadBox Studio! Разрабатываем ботов, сайты и веб-приложения.",menu(env));}
+// Configure the persistent button in Telegram's input-bar menu (not an inline message button).
+async function setupPersistentAppMenu(env) {
+  if(!env.MINI_APP_URL || !env.MINI_APP_URL.startsWith("https://")) return;
+  await tg(env,"setChatMenuButton",{
+    menu_button: {type:"web_app",text:"🌐 Открыть приложение",web_app:{url:env.MINI_APP_URL}}
+  });
+}
+async function start(env,chat){
+  try { await setupPersistentAppMenu(env); }
+  catch(e) { console.error("Could not configure Telegram menu button",String(e)); }
+  await msg(env,chat,"Добро пожаловать в LeadBox Studio! Разрабатываем ботов, сайты и веб-приложения.",menu(env));
+}
 async function onUpdate(env,u){
  if(!Number.isInteger(u.update_id)) return;
  const mark=await env.DB.prepare("INSERT OR IGNORE INTO processed_updates (update_id) VALUES (?)").bind(u.update_id).run();
