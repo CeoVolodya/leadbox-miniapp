@@ -35,3 +35,6 @@ curl -X POST "https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook" \
 - D1 is persistent; local Worker disk files are not. To retain historical leads, plan an explicit SQLite-to-D1 import.
 - For export, status management, a richer admin panel, and Mini App API integration, compare against the original code before production cutover.
 - In production monitor Cloudflare logs and Telegram getWebhookInfo for failed updates.
+
+
+Cloudflare Git integration: production builds are triggered by commits to `main`; Worker `leadbox-studio-v1`. Configure `BOT_TOKEN`, `WEBHOOK_SECRET`, and `ADMIN_CHAT_ID` as secrets before enabling the Telegram webhook.
