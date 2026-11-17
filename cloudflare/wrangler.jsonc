@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "leadbox-studio-bot",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "leadbox-studio",
+      "database_id": "f22c23fe-77fd-409b-b030-2ad8af12d965"
+    }
+  ]
+}
