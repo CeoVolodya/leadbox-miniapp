@@ -10,10 +10,13 @@ function ensureChatTable(env) {
   if (!chatTableInitialized) chatTableInitialized=env.DB.prepare("CREATE TABLE IF NOT EXISTS bot_last_messages (chat_id INTEGER PRIMARY KEY, message_id INTEGER NOT NULL)").run().catch(e=>{chatTableInitialized=null;throw e;});
   return chatTableInitialized;
 }
-// Only tidy up messages sent by this bot. Never delete customer/admin messages.
+// Only tidy up previous conversational bot messages in private chats. Never delete channel/group posts or admin notifications.
 async function msg(env,chat_id,text,reply_markup) {
-  await ensureChatTable(env);
   const sent=await tg(env,"sendMessage",{chat_id,text,...(reply_markup?{reply_markup}:{})});
+  // Fail closed: only Telegram-confirmed private chats may ever be cleaned.
+  // Channel, group, supergroup and unknown chat types retain every post.
+  if(sent.chat?.type!=="private" || !Number.isSafeInteger(sent.chat.id) || sent.chat.id<=0) return sent;
+  await ensureChatTable(env);
   const previous=await env.DB.prepare("SELECT message_id FROM bot_last_messages WHERE chat_id=?").bind(chat_id).first();
   await env.DB.prepare("INSERT INTO bot_last_messages(chat_id,message_id) VALUES (?,?) ON CONFLICT(chat_id) DO UPDATE SET message_id=excluded.message_id").bind(chat_id,sent.message_id).run();
   if(previous && previous.message_id!==sent.message_id) {
@@ -49,7 +52,7 @@ async function onUpdate(env,u){
   if(u.callback_query){
    const q=u.callback_query,c=q.message?.chat?.id,id=q.from?.id,v=q.data||"";
    await tg(env,"answerCallbackQuery",{callback_query_id:q.id});
-   if(!c||!id) return;
+   if(!c||!id||q.message?.chat?.type!=="private") return;
    if(v==="new") await msg(env,c,"Какой проект вас интересует?",kb(Object.entries(services).map(([k,t])=>[{text:t,callback_data:"service:"+k}])));
    else if(v==="services") await msg(env,c,"Telegram-боты, сайты, Mini Apps и веб-приложения. Нажмите «Оставить заявку» для консультации.",menu(env));
    else if(v.startsWith("service:")&&services[v.slice(8)]){
