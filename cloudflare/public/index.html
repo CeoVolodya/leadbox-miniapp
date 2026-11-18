@@ -41,7 +41,21 @@
     <option value="Автоматизация / CRM">Автоматизация / CRM</option><option value="Техподдержка">Техподдержка</option>
     <option value="Другое">Другое</option>
    </select></label>
-   <label>Что нужно разработать?<textarea name="description" minlength="10" maxlength="3000" required placeholder="Опиши идею, основные функции и пожеланиconst tg=window.Telegram?.WebApp;
+   <label>Что нужно разработать?<textarea name="description" minlength="10" maxlength="3000" required placeholder="Опишите идею и пожелания"></textarea></label>
+   <label>Как связаться?<input name="contact" maxlength="500" required placeholder="@username или другой контакт"></label>
+   <div id="lbStatus" class="lb-status" role="status"></div>
+   <button class="btn" type="submit">Отправить заявку</button>
+   <a id="lbBotLink" class="lb-fallback" hidden>Перейти к заявке в Telegram</a>
+  </form>
+ </section>
+</div>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+const concepts=[['web','Интернет-магазин','Каталог товаров и быстрые заявки.','WEB / SHOP'],['bot','Бот для записи','Выбор услуги и напоминания.','TELEGRAM / BOOKING'],['bot','Mini App для кафе','Меню и заказы в Telegram.','MINI APP / CAFE'],['auto','Панель заявок','Статусы клиентов и отчёты.','CRM / DASHBOARD'],['web','Сайт компании','Услуги и обратная связь.','WEB / BUSINESS'],['auto','Мониторинг проектов','Уведомления и контроль сбоев.','SUPPORT / STATUS']];
+const grid=document.getElementById('caseGrid');for(const [cat,name,descr,label] of concepts){const card=document.createElement('article');card.className='case';card.dataset.cat=cat;card.innerHTML='<div class="collage"><div class="mock"><small>'+label+'</small><div class="fake-head"></div><div class="fake-line"></div><div class="fake-image"></div></div><div class="mock side"><small>PREVIEW</small><div class="fake-image"></div></div></div><div class="body"><span class="tag">ДЕМО-КОНЦЕПЦИЯ</span><h3>'+name+'</h3><p>'+descr+'</p><a class="link order" href="#contact">Хочу похожий проект ↗</a></div>';grid.appendChild(card)}
+document.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>{const e=document.getElementById(b.dataset.toggle);const o=e.classList.toggle('open');b.textContent=o?'Свернуть −':'Подробнее +';b.setAttribute('aria-expanded',String(o))}));
+document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))});document.querySelectorAll('.case').forEach(x=>x.hidden=b.dataset.filter!=='all'&&x.dataset.cat!==b.dataset.filter)}));
+const tg=window.Telegram?.WebApp;
 try{tg?.ready();tg?.expand()}catch(e){}
 const overlay=document.getElementById('lbOverlay'),form=document.getElementById('lbForm'),
 status=document.getElementById('lbStatus'),fallback=document.getElementById('lbBotLink');
@@ -52,6 +66,7 @@ fetch('/api/bot').then(r=>r.ok?r.json():null).then(data=>{
   fallback.href=botDeepLink;fallback.hidden=false;
  }
 }).catch(()=>{});
+fallback.addEventListener('click',e=>{if(botDeepLink && tg?.openTelegramLink){e.preventDefault();tg.openTelegramLink(botDeepLink);}});
 function openOrder(e){
  e?.preventDefault();
  overlay.hidden=false;
@@ -66,7 +81,7 @@ document.getElementById('lbClose').addEventListener('click',closeOrder);
 overlay.addEventListener('click',e=>{if(e.target===overlay)closeOrder()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closeOrder()});
 document.addEventListener('click',e=>{
- const a=e.target.closest('a.order');
+ const a=e.target.closest?.('a.order');
  if(!a)return;
  openOrder(e);
 });
